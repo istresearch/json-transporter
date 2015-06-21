@@ -11,6 +11,7 @@ from boto.s3.key import Key
 import pymongo
 import happybase
 from docopt import docopt
+from addict import Dict
 
 from settings import (JSON_SETTINGS, ES_SETTINGS, S3_SETTINGS,
                       MONGO_SETTINGS, HBASE_SETTINGS, KAFKA_SETTINGS)
@@ -33,7 +34,7 @@ class JsonPort(object):
         for i in self.jsonlist:
             try:
                 yield json.loads(i)
-            except ValueError as v:
+            except ValueError:
                 yield None
 
 
@@ -41,8 +42,8 @@ class ElasticPort(object):
     """Class to handle Elastic Search actions.
 
     index:  Data input is a JSON generator.  If using the command-line tool,
-            this is handled via the fileinput.input() method which creates a
-            generator that reads lines from a file.
+            this is handled via the JsonPort method which creates a
+            JSON generator from lines read in from files.
     """
 
     def __init__(self):
@@ -53,10 +54,10 @@ class ElasticPort(object):
 
     def index(self, json_gen):
         self.es.indices.create(ES_SETTINGS['index'], ignore=400)
-        self.es.indices.put_mapping(index=ES_SETTINGS['index'], 
-                   doc_type=ES_SETTINGS['dtype'], 
-                   body=ES_SETTINGS['mapping']
-                   )
+        self.es.indices.put_mapping(index=ES_SETTINGS['index'],
+                                    doc_type=ES_SETTINGS['dtype'],
+                                    body=ES_SETTINGS['mapping']
+                                    )
         bulk_jrec = []
         for jrec in json_gen:
             bulk_jrec.append({'_index': ES_SETTINGS['index'],
@@ -128,7 +129,7 @@ def main():
 
     Usage:
         transporter es (<index> | <map> | <query>) --host=<host> [--type=<type>] FILE ...
-        transporter s3 (<upload> | <download>) --bucket=<bucket> FILE ... 
+        transporter s3 (<upload> | <download>) --bucket=<bucket> FILE ...
         transporter mongo --host=<host> --db=<db> --collection=<collection> FILE ...
         transporter hbase FILE ...
         transporter kafka (<produce> | <consume> ) --broker=<broker> --topic=<topic> FILE ...
@@ -141,23 +142,25 @@ def main():
     Options:
 
     Notes:
-        Might want to pass in the SETTINGS file in the command line rather than having it 
-        in the import process.
+        Might want to pass in the SETTINGS file in the command line rather
+        than having it in the import process.
 
     """
     args = docopt(main.__doc__)
 
+    f = args['FILE']
+
     if args['es']:
-        pass
+        a = JsonPort(fileinput.input(f))
+        print [i for i in a.parse()]
+
 
     if args['s3']:
-
         if args['<upload>']:
             s3u = S3Port()
             logging.info('upload starting...')
             s3u.upload(args['--bucket'], args['FILE'])
             logging.info('upload complete')
-
         if args['<download>']:
             pass
 

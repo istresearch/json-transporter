@@ -1,0 +1,22 @@
+JSON_SETTINGS = {
+
+}
+
+ES_SETTINGS ={
+
+}
+
+S3_SETTINGS = {
+
+}
+
+MONGO_SETTINGS = {
+    
+}
+
+HBASE_SETTINGS = {
+    
+}
+KAFKA_SETTINGS = {
+    
+}
