@@ -6,17 +6,22 @@ import json
 import logging
 
 from elasticsearch import Elasticsearch
+from elasticsearch.helpers import bulk
 import boto
 from boto.s3.key import Key
 import pymongo
 import happybase
 from docopt import docopt
 from addict import Dict
+import urllib3
 
 from settings import (JSON_SETTINGS, ES_SETTINGS, S3_SETTINGS,
                       MONGO_SETTINGS, HBASE_SETTINGS, KAFKA_SETTINGS)
 
+# disable annoying SSL certificate warnings
+urllib3.disable_warnings()
 
+# set up a logger
 logging.basicConfig(level=logging.INFO)
 
 
