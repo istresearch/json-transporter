@@ -40,7 +40,7 @@ class JsonPort(object):
             try:
                 yield json.loads(i)
             except ValueError:
-                yield None
+                raise
 
 
 class ElasticPort(object):
@@ -51,31 +51,37 @@ class ElasticPort(object):
             JSON generator from lines read in from files.
     """
 
-    def __init__(self):
-        self.es = Elasticsearch(ES_SETTINGS['host'])
+    def __init__(self, host, ssl, logger=None):
+        self.es = Elasticsearch(host, set_ssl=True)
+        self.logger = logger or logging.getLogger(__name__)
+        # self.logger.setLevel(logging.DEBUG)
 
     def query(self):
         pass
 
-    def index(self, json_gen):
-        self.es.indices.create(ES_SETTINGS['index'], ignore=400)
+    def index(self, jsonit, iname, dtype):
+        self.es.indices.create(iname, ignore=400)
+        print dir(self)
+
+        # Create a list of JSON objects for elastic search bulk indexing
+        jsonbulk = []
+        for jobj in jsonit:
+            jsonbulk.append({'_index': iname,
+                             '_type': dtype,
+                             '_id': jobj['id'],
+                             '_source': jobj
+                             })
+            self.logger.debug('done with %s' % jobj['id'])
+        self.logger.info('sending %s records to the bulk api' % len(jsonbulk))
+        r = bulk(client=self.es, actions=jsonbulk, stats_only=True)
+        self.logger.info('successful: %s; failed: %s' % (r[0], r[1]))
+
+    def map(self):
+        return None
         self.es.indices.put_mapping(index=ES_SETTINGS['index'],
                                     doc_type=ES_SETTINGS['dtype'],
                                     body=ES_SETTINGS['mapping']
                                     )
-        bulk_jrec = []
-        for jrec in json_gen:
-            bulk_jrec.append({'_index': ES_SETTINGS['index'],
-                             '_type': ES_SETTINGS['dtype'],
-                             # '_id': tweet_id,
-                             '_source': jrec
-                             })
-            r = bulk(client=self.es, actions=bulk_jrec, stats_only=True)
-            logger.info('%s; successful: %s; failed: %s' % 
-                        (fname.split('/')[-1], r[0], r[1]))
-
-    def map(self):
-        pass
 
 
 class S3Port(object):
@@ -133,7 +139,7 @@ def main():
     """ transporter: Transport JSON data to different outputs.
 
     Usage:
-        transporter es (<index> | <map> | <query>) --host=<host> [--type=<type>] FILE ...
+        transporter es (<index> | <map> | <query>) --indexname=<indexname> --type=<type> FILE ...
         transporter s3 (<upload> | <download>) --bucket=<bucket> FILE ...
         transporter mongo --host=<host> --db=<db> --collection=<collection> FILE ...
         transporter hbase FILE ...
@@ -156,9 +162,13 @@ def main():
     f = args['FILE']
 
     if args['es']:
-        a = JsonPort(fileinput.input(f))
-        print [i for i in a.parse()]
-
+        # Connect to elastic search
+        esi = ElasticPort(ES_SETTINGS['host'], ES_SETTINGS['ssl'])
+        if args['<index>']:
+            cli_iname = args['--indexname']
+            cli_dtype = args['--type']
+            cli_jsonit = JsonPort(fileinput.input(f))
+            esi.index(cli_jsonit.parse(), cli_iname, cli_dtype)
 
     if args['s3']:
         if args['<upload>']:
