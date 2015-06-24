@@ -11,6 +11,7 @@ import boto
 from boto.s3.key import Key
 import pymongo
 import happybase
+from pykafka import KafkaClient
 from docopt import docopt
 from addict import Dict
 import urllib3
@@ -125,14 +126,22 @@ class HbasePort(object):
 
 class KafkaPort(object):
 
-    def connect(self):
-        pass
+    def __init__(self, kafkabroker, logger=None):
+        self.client = KafkaClient(hosts=kafkabroker)
+        self.logger = logger or logging.getLogger(__name__)
 
-    def produce(self):
-        pass
+    def produce(self, topic_name, jsonit):
+        topic = self.client.topics[topic_name]
+        self.producer = topic.get_producer()
+        self.logger.info('producing messages to %s' % topic_name)
+        self.producer.produce(jsonit)
+        self.logger.info('all messages sent to %s' % topic_name)
 
     def consume(self):
         pass
+
+    def topics(self):
+        return self.client.topics.name
 
 
 def main():
@@ -143,11 +152,17 @@ def main():
         tport s3 (<upload> | <download>) --bucket=<bucket> FILE ...
         tport mongo --host=<host> --db=<db> --collection=<collection> FILE ...
         tport hbase FILE ...
-        tport kafka (<produce> | <consume> ) --broker=<broker> --topic=<topic> FILE ...
+        tport kafka (<produce> | <consume>) --topic=<topic> [--broker=<broker>] FILE ...
 
     Examples:
         Upload files (preferably serialized JSON ) to S3
         tport s3 upload --bucket=<bucket> FILE ...
+
+    Settings:
+        Some settings that don't change often (S3 keys, ES hosts, Kafka brokers)
+        can be set in the "localsettings.py" file so that they do not need
+        to be passed in at the command line.  However, it is still possible
+        to pass these values at the command line to override the settings.
 
 
     Options:
@@ -161,13 +176,14 @@ def main():
 
     f = args['FILE']
 
+    cli_jsonit = JsonPort(fileinput.input(f))
+
     if args['es']:
         # Connect to elastic search
         esi = ElasticPort(ES_SETTINGS['host'], ES_SETTINGS['ssl'])
         if args['<index>']:
             cli_iname = args['--indexname']
             cli_dtype = args['--type']
-            cli_jsonit = JsonPort(fileinput.input(f))
             esi.index(cli_jsonit.parse(), cli_iname, cli_dtype)
 
     if args['s3']:
@@ -186,8 +202,11 @@ def main():
         pass
 
     if args['kafka']:
-        pass
-
+        ka_broker = args['--broker'] or KAFKA_SETTINGS['broker']
+        kai = KafkaPort(ka_broker)
+        if args['<produce>']:
+            cli_topic = args['--topic']
+            kai.produce(cli_topic, cli_jsonit.parse())
 
 if __name__ == '__main__':
     sys.exit(main())
