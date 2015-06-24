@@ -52,7 +52,7 @@ class ElasticPort(object):
     """
 
     def __init__(self, host, ssl, logger=None):
-        self.es = Elasticsearch(host, set_ssl=True)
+        self.es = Elasticsearch(host, set_ssl=ssl)
         self.logger = logger or logging.getLogger(__name__)
         # self.logger.setLevel(logging.DEBUG)
 
