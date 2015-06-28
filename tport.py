@@ -87,27 +87,39 @@ class ElasticPort(object):
 
 class S3Port(object):
 
-    def __init__(self):
-        self.conn = boto.connect_s3(S3_SETTINGS['s3_access_key'],
-                                    S3_SETTINGS['s3_secret_key'])
+    def __init__(self, access_key, secret_key):
+        self.conn = boto.connect_s3(access_key, secret_key)
 
     def __str__(self):
-        return "Connected to: {}".format(S3_SETTINGS['s3_access_key'])
+        return "Connected to: {0}".format(S3_SETTINGS['s3_access_key'])
 
     def compress(self):
         pass
 
     def upload(self, bucket_name, keylist):
-        self.bucket = self.conn.create_bucket(bucket_name)
+        # Create new bucket if it doesn't exist.  Otherwise, use existing.
+        new_bucket = self.conn.create_bucket(bucket_name)
         for i in keylist:
-            k = Key(self.bucket)
+            k = Key(new_bucket)
             k.key = i
             k.set_contents_from_filename(i)
-            logging.info('{} file was uploaded to: {}'.format(i, bucket_name))
+            logging.info('{0} file was uploaded to: {1}'.format(i, bucket_name))
 
     def download(self):
         pass
 
+    def destroy(self, bucket_name):
+        full_bucket = self.conn.get_bucket(bucket_name)
+        for key in full_bucket.list():
+            key.delete()
+        self.conn.delete_bucket(bucket_name)
+        logging.info('{0} bucket was destroyed'.format(bucket_name))
+
+    def list(self):
+        rs = self.conn.get_all_buckets()
+        print 'Available buckets:\n'
+        for b in rs:
+            print b
 
 class MongoPort(object):
 
@@ -149,7 +161,9 @@ def main():
 
     Usage:
         tport es (<index> | <map> | <query>) --indexname=<indexname> --type=<type> FILE ...
-        tport s3 (<upload> | <download>) --bucket=<bucket> FILE ...
+        tport s3 list
+        tport s3 (upload | download) <bucket> FILE ...
+        tport s3 destroy <bucket>
         tport mongo --host=<host> --db=<db> --collection=<collection> FILE ...
         tport hbase FILE ...
         tport kafka (<produce> | <consume>) --topic=<topic> [--broker=<broker>] FILE ...
@@ -174,7 +188,9 @@ def main():
     """
     args = docopt(main.__doc__)
 
-    f = args['FILE']
+    f = args['FILE'] or ''
+
+    print args
 
     cli_jsonit = JsonPort(fileinput.input(f))
 
@@ -187,13 +203,27 @@ def main():
             esi.index(cli_jsonit.parse(), cli_iname, cli_dtype)
 
     if args['s3']:
-        if args['<upload>']:
-            s3u = S3Port()
+        s3u = S3Port(S3_SETTINGS['access_key'], S3_SETTINGS['secret_key'])
+        if args['list']:
+            s3u.list()
+        if args['upload']:
             logging.info('upload starting...')
-            s3u.upload(args['--bucket'], f)
+            s3u.upload(args['<bucket>'], f)
             logging.info('upload complete')
-        if args['<download>']:
+        if args['download']:
             pass
+        if args['destroy']:
+            print 'You are about to DESTROY the entire {0} bucket!!!\n'.format(
+                                                            args['<bucket>'])
+            response = raw_input('Are you sure? [Y/n] ')
+            if response == 'Y':
+                s3u.destroy(args['<bucket>'])
+            else:
+                print """
+                                               (@<
+                 Chickening out....           (< )
+                                               ^^
+                      """
 
     if args['mongo']:
         pass
