@@ -134,7 +134,7 @@ class KafkaPort(object):
         topic = self.client.topics[topic_name]
         self.producer = topic.get_producer()
         self.logger.info('producing messages to %s' % topic_name)
-        self.producer.produce(jsonit)
+        self.producer.produce((json.dumps(s) for s in jsonit))
         self.logger.info('all messages sent to %s' % topic_name)
 
     def consume(self):
