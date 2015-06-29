@@ -41,7 +41,6 @@ class JsonPort(object):
             try:
                 yield json.loads(i)
             except ValueError as ve:
-                # sys.exit('Incorrect file format.  Should be one JSON per line')
                 raise ValueError('Incorrect file format. Should be one JSON per line')
 
     def inspect(self):
@@ -177,7 +176,7 @@ def main():
         tport s3 destroy <bucket>
         tport mongo --host=<host> --db=<db> --collection=<collection> FILE ...
         tport hbase FILE ...
-        tport kafka (<produce> | <consume>) --topic=<topic> [--broker=<broker>] FILE ...
+        tport kafka (produce | consume) --topic=<topic> [--broker=<broker>] FILE ...
 
     Examples:
         Upload files (preferably serialized JSON ) to S3
@@ -248,9 +247,11 @@ def main():
     if args['kafka']:
         ka_broker = args['--broker'] or KAFKA_SETTINGS['broker']
         kai = KafkaPort(ka_broker)
-        if args['<produce>']:
+        if args['produce']:
             cli_topic = args['--topic']
             kai.produce(cli_topic, cli_jsonit.parse())
+        if args['consume']:
+            pass
 
 if __name__ == '__main__':
     sys.exit(main())
