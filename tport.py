@@ -37,17 +37,19 @@ class JsonPort(object):
         self.jsonlist = jsonlist
 
     def parse(self):
-        for i in self.jsonlist:
+        for idx, i in enumerate(self.jsonlist):
             try:
                 yield json.loads(i)
             except ValueError as ve:
-                raise ValueError('Incorrect file format. Should be one JSON per line')
+                logging.warning('line {0}:  {1}'.format(idx, ve))
+                logging.debug('line {0}:  {1}'.format(idx, i))
+                yield {}
 
     def inspect(self):
         for i in self.parse():
             print json.dumps(i, indent=2)
             try:
-                raw_input('--Press any key to continue--\n')
+                raw_input('\n--Press any key to continue--\n')
             except EOFError:
                 sys.exit(0)
 
