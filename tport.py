@@ -73,20 +73,22 @@ class ElasticPort(object):
 
     def index(self, jsonit, iname, dtype):
         self.es.indices.create(iname, ignore=400)
-        print dir(self)
 
-        # Create a list of JSON objects for elastic search bulk indexing
-        jsonbulk = []
-        for jobj in jsonit:
-            jsonbulk.append({'_index': iname,
-                             '_type': dtype,
-                             '_id': jobj['id'],
-                             '_source': jobj
-                             })
-            self.logger.debug('done with %s' % jobj['id'])
-        self.logger.info('sending %s records to the bulk api' % len(jsonbulk))
-        r = bulk(client=self.es, actions=jsonbulk, stats_only=True)
-        self.logger.info('successful: %s; failed: %s' % (r[0], r[1]))
+        # Create a generator of JSON objects for bulk indexing
+        def bulkgen(jsongen):
+            for jobj in jsongen:
+                bulkr = dict()
+                bulkr['_index'] = iname
+                bulkr['_type'] = dtype
+                bulkr['_source'] = jobj
+                if 'id' in jobj:
+                    bulkr['_id'] = jobj['id']
+                self.logger.debug('done with %s' % jobj['id'])
+                yield bulkr
+                
+
+        r = bulk(client=self.es, actions=bulkgen(jsonit), stats_only=True)
+        self.logger.info('INDEX: successful: %s; failed: %s' % (r[0], r[1]))
 
     def map(self):
         return None
