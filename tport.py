@@ -10,7 +10,7 @@ from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 import boto
 from boto.s3.key import Key
-import pymongo
+from pymongo import MongoClient
 import happybase
 from pykafka import KafkaClient
 from docopt import docopt
@@ -132,11 +132,41 @@ class S3Port(object):
 
 class MongoPort(object):
 
-    def connect(self):
-        pass
+    def __init__(self, host, db):
+        self.client = MongoClient(host)
+        self.db = self.client[db]
 
-    def add(self):
-        pass
+    def preview(self, collection):
+        self.collection = self.db[collection]
+        for doc in self.collection.find():
+            print doc
+            try:
+                raw_input('\n--Press any key to continue--\n')
+            except EOFError:
+                sys.exit(0)
+
+    def add(self, collection):
+        self.collection = self.db.collection
+
+    def export(self, collection, f=''):
+        """ export not working yet
+        """
+        self.collection = self.db[collection]
+        for doc in self.collection.find():
+            if f:
+                with open(f, 'w') as newfile:
+                    newfile.write()
+
+        # d = JsonPort(self.collection.find())
+        # for item in d.parse():
+        #     print item
+        #     raw_input('\Continue?\n')
+        # for doc in self.collection.find():
+
+    def list(self):
+        for c in self.db.collection_names():
+            print c
+
 
 
 class HbasePort(object):
@@ -239,7 +269,18 @@ def main():
                       """
 
     if args['mongo']:
-        pass
+        # Connect to mongo database
+        mg_host = MONGO_SETTINGS['host'] or args['--host']
+        mg_db = MONGO_SETTINGS['db'] or args['--db']
+        mgi = MongoPort(mg_host, mg_db)
+        if args['list']:
+            mgi.list()
+        if args['preview']:
+            mg_collection = args['--collection']
+            mgi.preview(mg_collection)
+        if args['export']:
+            mg_collection = args['--collection']
+            mgi.export(mg_collection, f)   # generator object
 
     if args['hbase']:
         pass
