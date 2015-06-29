@@ -8,6 +8,7 @@ import urllib3
 
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
+from elasticsearch.helpers import streaming_bulk
 import boto
 from boto.s3.key import Key
 from pymongo import MongoClient
@@ -208,7 +209,7 @@ def main():
 
     Usage:
         tport inspect FILE ...
-        tport es (<index> | <map> | <query>) --indexname=<indexname> --type=<type> FILE ...
+        tport es (<index> | <map> | <query>) --indexname=<indexname> --doctype=<doctype> FILE ...
         tport s3 list
         tport s3 (upload | download) <bucket> FILE ...
         tport s3 destroy <bucket>
@@ -236,6 +237,7 @@ def main():
         -t --topic <topic>
         -b --broker <broker>
         -i --indexname <indexname>
+        -d --doctype <doctype>
         -c --collection <collection>
 
     Notes:
@@ -259,7 +261,7 @@ def main():
         esi = ElasticPort(ES_SETTINGS['host'], ES_SETTINGS['ssl'])
         if args['<index>']:
             cli_iname = args['--indexname']
-            cli_dtype = args['--type']
+            cli_dtype = args['--doctype']
             esi.index(cli_jsonit.parse(), cli_iname, cli_dtype)
 
     if args['s3']:
