@@ -190,11 +190,17 @@ class KafkaPort(object):
         self.producer.produce((json.dumps(s) for s in jsonit))
         self.logger.info('all messages sent to %s' % topic_name)
 
-    def consume(self):
-        pass
+    def consume(self, topic_name):
+        topic = self.client.topics[topic_name]
+        self.consumer = topic.get_simple_consumer()
+        for message in self.consumer:
+            if message is not None:
+                print message.offset, message.value
 
     def topics(self):
-        return self.client.topics.name
+        topics = [t for t in self.client.topics]
+        for s in sorted(topics):
+            print s
 
 
 def main():
@@ -290,11 +296,14 @@ def main():
     if args['kafka']:
         ka_broker = args['--broker'] or KAFKA_SETTINGS['broker']
         kai = KafkaPort(ka_broker)
+        if args['topics']:
+            kai.topics()
         if args['produce']:
             cli_topic = args['--topic']
             kai.produce(cli_topic, cli_jsonit.parse())
         if args['consume']:
-            pass
+            cli_topic = args['--topic']
+            kai.consume(cli_topic)
 
 if __name__ == '__main__':
     sys.exit(main())
