@@ -245,11 +245,11 @@ def main():
     """
     args = docopt(main.__doc__)
 
-    f = args['FILE'] or ''
+    f = args['FILE']
 
-    logging.info(args)
+    logging.debug(args)
 
-    cli_jsonit = JsonPort(fileinput.input(f))
+    cli_jsonit = JsonPort(fileinput.input(f)) if f else None
 
     if args['inspect']:
         cli_jsonit.inspect()
