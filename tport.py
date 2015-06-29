@@ -63,10 +63,17 @@ class ElasticPort(object):
             JSON generator from lines read in from files.
     """
 
+    def __str__(self):
+        return 'ElasticPort'
+
     def __init__(self, host, ssl, logger=None):
         self.es = Elasticsearch(host, set_ssl=ssl)
-        self.logger = logger or logging.getLogger(__name__)
-        # self.logger.setLevel(logging.DEBUG)
+
+        self.logger = logging.getLogger(__name__)
+        # ch = logging.StreamHandler()
+        # ch.setLevel(logging.INFO)
+        # self.logger.addHandler(ch)
+        # self.logger.setLevel(logging.INFO)
 
     def query(self):
         pass
