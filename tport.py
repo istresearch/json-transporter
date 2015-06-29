@@ -40,8 +40,17 @@ class JsonPort(object):
         for i in self.jsonlist:
             try:
                 yield json.loads(i)
-            except ValueError:
-                raise
+            except ValueError as ve:
+                # sys.exit('Incorrect file format.  Should be one JSON per line')
+                raise ValueError('Incorrect file format. Should be one JSON per line')
+
+    def inspect(self):
+        for i in self.parse():
+            print json.dumps(i, indent=2)
+            try:
+                raw_input('--Press any key to continue--\n')
+            except EOFError:
+                sys.exit(0)
 
 
 class ElasticPort(object):
@@ -103,7 +112,7 @@ class S3Port(object):
             k = Key(new_bucket)
             k.key = i
             k.set_contents_from_filename(i)
-            logging.info('{0} file was uploaded to: {1}'.format(i, bucket_name))
+            logging.info('{0} file uploaded to: {1}'.format(i, bucket_name))
 
     def download(self):
         pass
@@ -120,6 +129,7 @@ class S3Port(object):
         print 'Available buckets:\n'
         for b in rs:
             print b
+
 
 class MongoPort(object):
 
@@ -160,6 +170,7 @@ def main():
     """ transporter: Transport JSON data to different outputs.
 
     Usage:
+        tport inspect FILE ...
         tport es (<index> | <map> | <query>) --indexname=<indexname> --type=<type> FILE ...
         tport s3 list
         tport s3 (upload | download) <bucket> FILE ...
@@ -190,9 +201,12 @@ def main():
 
     f = args['FILE'] or ''
 
-    print args
+    logging.info(args)
 
     cli_jsonit = JsonPort(fileinput.input(f))
+
+    if args['inspect']:
+        cli_jsonit.inspect()
 
     if args['es']:
         # Connect to elastic search
