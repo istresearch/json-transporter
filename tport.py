@@ -212,9 +212,14 @@ def main():
         tport s3 list
         tport s3 (upload | download) <bucket> FILE ...
         tport s3 destroy <bucket>
-        tport mongo --host=<host> --db=<db> --collection=<collection> FILE ...
+        tport mongo list [--host=<host>] [--db=<db>]
+        tport mongo preview [--host=<host>] [--db=<db>] --collection=<collection>
+        tport mongo export [--host=<host>] [--db=<db>] --collection=<collection> [FILE ...]
+        tport mongo add [--host=<host>] [--db=<db>] --collection=<collection> FILE ...
         tport hbase FILE ...
-        tport kafka (produce | consume) --topic=<topic> [--broker=<broker>] FILE ...
+        tport kafka topics [--broker=<broker>]
+        tport kafka produce --topic=<topic> [--broker=<broker>] FILE ...
+        tport kafka consume --topic=<topic> [--broker=<broker>]
 
     Examples:
         Upload files (preferably serialized JSON ) to S3
@@ -228,6 +233,10 @@ def main():
 
 
     Options:
+        -t --topic <topic>
+        -b --broker <broker>
+        -i --indexname <indexname>
+        -c --collection <collection>
 
     Notes:
         Might want to pass in the SETTINGS file in the command line rather
