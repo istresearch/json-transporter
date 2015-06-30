@@ -183,8 +183,17 @@ class MongoPort(object):
 
 class HbasePort(object):
 
-    def connect(self):
-        pass
+    def __init__(self, hostname):
+        self.connection = happybase.Connection(hostname)
+
+    def scan(self, tablename):
+        table = self.connection.table(tablename)
+        for key, data in table.scan():
+            print key, data
+            try:
+                raw_input('\n--Press any key to continue--\n')
+            except EOFError:
+                sys.exit(0)
 
 
 class KafkaPort(object):
@@ -226,7 +235,7 @@ def main():
         tport mongo preview [--host=<host>] [--db=<db>] --collection=<collection>
         tport mongo export [--host=<host>] [--db=<db>] --collection=<collection> [FILE ...]
         tport mongo add [--host=<host>] [--db=<db>] --collection=<collection> FILE ...
-        tport hbase FILE ...
+        tport hbase scan [--host=<host>] --table=<table>
         tport kafka topics [--broker=<broker>]
         tport kafka produce --topic=<topic> [--broker=<broker>] FILE ...
         tport kafka consume --topic=<topic> [--broker=<broker>]
@@ -311,7 +320,11 @@ def main():
             mgi.export(mg_collection, f)   # generator object
 
     if args['hbase']:
-        pass
+        hb_host = HBASE_SETTINGS['host'] or args['--host']
+        hbi = HbasePort(hb_host)
+        if args['scan']:
+            hbi_table = args['--table']
+            hbi.scan(hbi_table)
 
     if args['kafka']:
         ka_broker = args['--broker'] or KAFKA_SETTINGS['broker']
