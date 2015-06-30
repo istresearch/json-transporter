@@ -17,7 +17,7 @@ MONGO_SETTINGS = {
 }
 
 HBASE_SETTINGS = {
-
+    'host': 'localhost'
 }
 
 KAFKA_SETTINGS = {
