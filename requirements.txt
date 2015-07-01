@@ -1,5 +1,8 @@
+urllib3
 elasticsearch
 boto
 pymongo
 happybase
 pykafka
+docopt
+

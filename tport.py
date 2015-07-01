@@ -4,8 +4,8 @@ import sys
 import fileinput
 import json
 import logging
-import urllib3
 
+import urllib3
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 from elasticsearch.helpers import streaming_bulk
@@ -15,7 +15,7 @@ from pymongo import MongoClient
 import happybase
 from pykafka import KafkaClient
 from docopt import docopt
-from addict import Dict
+# from addict import Dict
 
 from settings import (JSON_SETTINGS, ES_SETTINGS, S3_SETTINGS,
                       MONGO_SETTINGS, HBASE_SETTINGS, KAFKA_SETTINGS)
