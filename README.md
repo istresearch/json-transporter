@@ -34,7 +34,14 @@ To view usage just type `python tport.py`
 ```
 
 ## Configuration
-Basic settings can be found in the `settings.py` file.  To use with your servers hosted somewhere besides **localhost**, update the `localsettings.py` file, which will override `settings.py`.  
+Basic settings can be found in the `settings.py` file.  To use with your servers hosted somewhere besides **localhost**, add a `localsettings.py` file, which will override `settings.py`.  For example, if you are working with MongoDB:
+
+```
+MONGO_SETTINGS = {
+    'host': 'transporter',
+    'db': 'dingo'
+}
+```
 
 **NOTE**:  Do not check in `localsettings.py` into this repository.  That file likely contains connection and password information that should be kept separate.
 
