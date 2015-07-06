@@ -1,6 +1,8 @@
 # json-transporter
 ### Transportation is a precise business.
 
+![alt tag](transporter.jpg)
+
 **json-transporter** is a simple command line tool writen in Python for all your JSON transporting needs.  Tools currently supported:
 
 - Amazon S3
