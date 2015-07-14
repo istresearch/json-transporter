@@ -139,10 +139,16 @@ class S3Port(object):
             k.set_contents_from_filename(i)
             logging.info('{0} file uploaded to: {1}'.format(i, bucket_name))
 
-    def download(self):
-        pass
+    def download(self, bucket_name, folder):
+        """ Download all data in an S3 bucket. """
+        a_bucket = self.conn.create_bucket(bucket_name)
+        for key in a_bucket.list():
+            path = '/'.join([folder, key.name])
+            key.get_contents_to_filename(path)
+            logging.info('{0} downloaded'.format(path))
 
     def destroy(self, bucket_name):
+        """ Destroy an S3 bucket and all data inside it. """
         full_bucket = self.conn.get_bucket(bucket_name)
         for key in full_bucket.list():
             key.delete()
@@ -255,7 +261,8 @@ def main():
         tport inspect FILE ...
         tport es (<index> | <map> | <query>) --indexname=<indexname> --doctype=<doctype> FILE ...
         tport s3 list
-        tport s3 (upload | download) <bucket> FILE ...
+        tport s3 upload <bucket> FILE ...
+        tport s3 download <bucket> FOLDER
         tport s3 destroy <bucket>
         tport mongo list [--host=<host>] [--db=<db>]
         tport mongo preview [--host=<host>] [--db=<db>] --collection=<collection>
@@ -313,11 +320,15 @@ def main():
         if args['list']:
             s3u.list()
         if args['upload']:
+            if args['--compress']:
+                pass
             logging.info('upload starting...')
             s3u.upload(args['<bucket>'], f)
             logging.info('upload complete')
         if args['download']:
-            pass
+            cli_folder = args['FOLDER']
+            cli_bucket = args['<bucket>']
+            s3u.download(cli_bucket, cli_folder)
         if args['destroy']:
             print 'You are about to DESTROY the entire {0} bucket!!!\n'.format(
                                                             args['<bucket>'])
