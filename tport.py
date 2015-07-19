@@ -28,7 +28,7 @@ def main():
 
     Usage:
         tport inspect FILE ...
-        tport es (<index> | <map> | <query>) --indexname=<indexname> --doctype=<doctype> FILE ...
+        tport es index --indexname=<indexname> --doctype=<doctype> [--mapping=<mapping>] [FILE ...]
         tport s3 list
         tport s3 upload <bucket> FILE ...
         tport s3 download <bucket> FOLDER
@@ -79,9 +79,16 @@ def main():
     if args['es']:
         # Connect to elastic search
         esi = ElasticPort(ES_SETTINGS['host'], ES_SETTINGS['ssl'])
-        if args['<index>']:
+        if args['index']:
             cli_iname = args['--indexname']
             cli_dtype = args['--doctype']
+            # Create index if not created
+            esi.create(cli_iname)
+            if args['--mapping']:
+                with open(args['--mapping']) as fm:
+                    cli_mapping = json.load(fm)
+                esi.map(cli_iname, cli_dtype, cli_mapping)
+
             esi.index(cli_jsonit.parse(), cli_iname, cli_dtype)
 
     if args['s3']:

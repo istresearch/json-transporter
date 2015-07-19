@@ -76,35 +76,36 @@ class ElasticPort(object):
             this is handled via the JsonPort method which creates a
             JSON generator from lines read in from files.
         """
-        self.es.indices.create(iname, ignore=400)
 
         # Create a generator of JSON objects for bulk indexing
         def bulkgen(jsongen):
-            for jobj in jsongen:
+            for idx, jobj in enumerate(jsongen):
                 bulkr = dict()
                 bulkr['_index'] = iname
                 bulkr['_type'] = dtype
                 bulkr['_source'] = jobj
                 if 'id' in jobj:
                     bulkr['_id'] = jobj['id']
-                self.logger.debug('done with %s' % jobj['id'])
+                self.logger.debug('done with index %s' % idx)
                 yield bulkr
 
 
         r = bulk(client=self.es, actions=bulkgen(jsonit), stats_only=True)
         self.logger.info('INDEX: successful: %s; failed: %s' % (r[0], r[1]))
 
-    def map(self):
-        """ After creating a new index, specify a mapping. """
-        return None
-        # self.es.indices.put_mapping(index=ES_SETTINGS['index'],
-        #                             doc_type=ES_SETTINGS['dtype'],
-        #                             body=ES_SETTINGS['mapping']
-        #                             )
+    def map(self, iname, dtype, mapping):
+        """ After creating a new index, specify a mapping.
+        mapping input is a dictionary.
+        """
+        self.logger.info('MAPPING: mapping is %s' % mapping)
+        self.es.indices.put_mapping(index=iname,
+                                    doc_type=dtype,
+                                    body=mapping
+                                    )
 
-    def create(self):
+    def create(self, iname):
         """ Create a new Elastic Search index. """
-        pass
+        self.es.indices.create(iname, ignore=400)
 
 
 class S3Port(object):
