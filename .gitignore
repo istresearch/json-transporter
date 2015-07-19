@@ -58,5 +58,3 @@ docs/_build/
 
 # PyBuilder
 target/
-test.json
-broken.json
