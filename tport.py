@@ -5,6 +5,9 @@ import sys
 from docopt import docopt
 import logging
 import urllib3
+import json
+import os
+import glob
 
 from tools import JsonPort
 from tools import S3Port
@@ -28,7 +31,7 @@ def main():
 
     Usage:
         tport inspect FILE ...
-        tport es index --indexname=<indexname> --doctype=<doctype> [--mapping=<mapping>] [FILE ...]
+        tport es index --indexname=<indexname> --doctype=<doctype> [--mapping=<mapping>] FILE ...
         tport s3 list
         tport s3 upload <bucket> FILE ...
         tport s3 download <bucket> FOLDER
@@ -67,11 +70,20 @@ def main():
     """
     args = docopt(main.__doc__)
 
-    f = args['FILE']
+    # In this case, its actually a folder path rather than a file
+    cli_glob = args['FILE']
 
     logging.debug(args)
 
-    cli_jsonit = JsonPort(fileinput.input(f)) if f else None
+    # cli_jsonit = JsonPort(fileinput.input(cli_glob)) if cli_glob else None
+
+    def filegen(pathglob):
+        for filename in glob.iglob(pathglob):
+            with open(filename) as f:
+                for line in f:
+                    yield line
+
+    cli_jsonit = JsonPort(filegen(cli_glob))
 
     if args['inspect']:
         cli_jsonit.inspect()
@@ -99,7 +111,7 @@ def main():
             if args['--compress']:
                 pass
             logging.info('upload starting...')
-            s3u.upload(args['<bucket>'], f)
+            s3u.upload(args['<bucket>'], cli_glob)
             logging.info('upload complete')
         if args['download']:
             cli_folder = args['FOLDER']
@@ -130,7 +142,7 @@ def main():
             mgi.preview(mg_collection)
         if args['export']:
             mg_collection = args['--collection']
-            mgi.export(mg_collection, f)   # generator object
+            mgi.export(mg_collection, cli_glob)   # generator object
 
     if args['hbase']:
         hb_host = HBASE_SETTINGS['host'] or args['--host']
