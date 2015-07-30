@@ -90,7 +90,7 @@ class ElasticPort(object):
 
 
         r = bulk(client=self.es, actions=bulkgen(jsonit), stats_only=True)
-        self.logger.info('INDEX: successful: %s; failed: %s' % (r[0], r[1]))
+        print 'INDEX: successful: %s; failed: %s' % (r[0], r[1])
 
     def map(self, iname, dtype, mapping):
         """ After creating a new index, specify a mapping.
