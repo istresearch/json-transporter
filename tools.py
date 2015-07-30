@@ -46,7 +46,7 @@ class JsonPort(object):
         for i in self.parse():
             print json.dumps(i, indent=2)
             try:
-                raw_input('\n--Press any key to continue--\n')
+                raw_input('\n--Press <ENTER> to continue--\n')
             except EOFError:
                 sys.exit(0)
 
