@@ -84,7 +84,7 @@ class ElasticPort(object):
                 bulkr['_type'] = dtype
                 bulkr['_source'] = jobj
                 if 'id' in jobj:
-                    bulkr['_id'] = jobj['id']
+                    bulkr['_id'] = jobj['id'].split(':')[2]
                 self.logger.debug('done with index %s' % idx)
                 yield bulkr
 
