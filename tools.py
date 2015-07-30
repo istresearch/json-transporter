@@ -38,7 +38,6 @@ class JsonPort(object):
             except ValueError as ve:
                 logging.warning('line {0}:  {1}'.format(idx, ve))
                 logging.debug('line {0}:  {1}'.format(idx, i))
-                yield {}
 
     def inspect(self):
         """ Output the serialized JSON object one line at a time.  To
