@@ -1,5 +1,5 @@
 urllib3
-elasticsearch
+elasticsearch>=1.6
 boto
 pymongo
 happybase
