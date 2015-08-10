@@ -3,6 +3,8 @@
 import sys
 import json
 import logging
+import gzip
+import shutil
 
 import urllib3
 from elasticsearch import Elasticsearch
@@ -115,21 +117,22 @@ class S3Port(object):
     def __init__(self, access_key, secret_key):
         self.conn = boto.connect_s3(access_key, secret_key)
 
-    def compress(self):
-        """ Optionally compress data before uploading. """
-        pass
-
-    def upload(self, bucket_name, keylist):
+    def upload(self, bucket_name, filelist, compress=False):
         """ Given a S3 bucket and a fileglob, upload data to S3. Using the
             --compress option is recommended to save on S3 costs.
         """
         # Create new bucket if it doesn't exist.  Otherwise, use existing.
         new_bucket = self.conn.create_bucket(bucket_name)
-        for i in keylist:
+        for fname in filelist:
+            if compress:
+                cfname = ''.join(['/tmp/', fname.split('/')[-1], '.tgz'])
+                with open(fname, 'rb') as f_in, gzip.open(cfname, 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+                fname = cfname
             k = Key(new_bucket)
-            k.key = i
-            k.set_contents_from_filename(i)
-            logging.info('{0} file uploaded to: {1}'.format(i, bucket_name))
+            k.key = fname.split('/')[-1]
+            k.set_contents_from_filename(fname)
+            logging.info('{0} file uploaded to: {1}'.format(fname, bucket_name))
 
     def download(self, bucket_name, folder):
         """ Download all data in an S3 bucket. """

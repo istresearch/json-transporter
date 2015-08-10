@@ -30,7 +30,7 @@ def main():
         tport inspect FILE ...
         tport es index --indexname=<indexname> --doctype=<doctype> [--mapping=<mapping>] [FILE ...]
         tport s3 list
-        tport s3 upload <bucket> FILE ...
+        tport s3 upload <bucket> [--compress] FILE ...
         tport s3 download <bucket> FOLDER
         tport s3 destroy <bucket>
         tport mongo list [--host=<host>] [--db=<db>]
@@ -96,10 +96,10 @@ def main():
         if args['list']:
             s3u.list()
         if args['upload']:
-            if args['--compress']:
-                pass
+            cli_bucket = args['<bucket>']
+            cli_compress = True if args['--compress'] else False
             logging.info('upload starting...')
-            s3u.upload(args['<bucket>'], f)
+            s3u.upload(cli_bucket, f, cli_compress)
             logging.info('upload complete')
         if args['download']:
             cli_folder = args['FOLDER']
