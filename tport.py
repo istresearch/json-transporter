@@ -5,6 +5,7 @@ import sys
 from docopt import docopt
 import logging
 import urllib3
+import json
 
 from tools import JsonPort
 from tools import S3Port
@@ -28,6 +29,8 @@ def main():
 
     Usage:
         tport inspect FILE ...
+        tport es create --indexname=<indexname>
+        tport es map --indexname=<indexname> --doctype=<doctype> --mapping=<mapping>
         tport es index --indexname=<indexname> --doctype=<doctype> [--mapping=<mapping>] [FILE ...]
         tport s3 list
         tport s3 upload <bucket> [--compress] FILE ...
@@ -79,9 +82,15 @@ def main():
     if args['es']:
         # Connect to elastic search
         esi = ElasticPort(ES_SETTINGS['host'], ES_SETTINGS['ssl'])
+        cli_iname = args['--indexname']
+        cli_dtype = args['--doctype']
+        if args['create']:
+            esi.create(cli_iname)
+        if args['map']:
+            with open(args['--mapping']) as fm:
+                cli_mapping = json.load(fm)
+            esi.map(cli_iname, cli_dtype, cli_mapping)
         if args['index']:
-            cli_iname = args['--indexname']
-            cli_dtype = args['--doctype']
             # Create index if not created
             esi.create(cli_iname)
             if args['--mapping']:

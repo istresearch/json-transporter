@@ -125,7 +125,7 @@ class S3Port(object):
         new_bucket = self.conn.create_bucket(bucket_name)
         for fname in filelist:
             if compress:
-                cfname = ''.join(['/tmp/', fname.split('/')[-1], '.tgz'])
+                cfname = ''.join(['/tmp/', fname.split('/')[-1], '.gz'])
                 with open(fname, 'rb') as f_in, gzip.open(cfname, 'wb') as f_out:
                     shutil.copyfileobj(f_in, f_out)
                 fname = cfname
