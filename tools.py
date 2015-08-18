@@ -117,7 +117,7 @@ class S3Port(object):
     def __init__(self, access_key, secret_key):
         self.conn = boto.connect_s3(access_key, secret_key)
 
-    def upload(self, bucket_name, filelist, compress=False):
+    def upload(self, bucket_name, filelist, compress=False, replace_key=False):
         """ Given a S3 bucket and a fileglob, upload data to S3. Using the
             --compress option is recommended to save on S3 costs.
         """
@@ -131,8 +131,11 @@ class S3Port(object):
                 fname = cfname
             k = Key(new_bucket)
             k.key = fname.split('/')[-1]
-            k.set_contents_from_filename(fname)
-            logging.info('{0} file uploaded to: {1}'.format(fname, bucket_name))
+            t = k.set_contents_from_filename(fname, replace=replace_key)
+            if t:
+                logging.info('{0} file uploaded to: {1}'.format(fname, bucket_name))
+            if not t:
+                logging.info('{0} file already exists in {1}!'.format(fname, bucket_name))
 
     def download(self, bucket_name, folder):
         """ Download all data in an S3 bucket. """

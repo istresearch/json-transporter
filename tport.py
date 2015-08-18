@@ -33,7 +33,7 @@ def main():
         tport es map --indexname=<indexname> --doctype=<doctype> --mapping=<mapping>
         tport es index --indexname=<indexname> --doctype=<doctype> [--chunksize=<chunksize>] [--mapping=<mapping>] [FILE ...]
         tport s3 list
-        tport s3 upload <bucket> [--compress] FILE ...
+        tport s3 upload <bucket> [--replace=<replace>] [--compress] FILE ...
         tport s3 download <bucket> FOLDER
         tport s3 destroy <bucket>
         tport mongo list [--host=<host>] [--db=<db>]
@@ -106,11 +106,12 @@ def main():
         if args['list']:
             s3u.list()
         if args['upload']:
+            cli_replace = args['--replace']
             cli_bucket = args['<bucket>']
             cli_compress = True if args['--compress'] else False
-            logging.info('upload starting...')
-            s3u.upload(cli_bucket, f, cli_compress)
-            logging.info('upload complete')
+#            logging.info('upload starting...')
+            s3u.upload(cli_bucket, f, cli_compress, cli_replace)
+#            logging.info('upload complete')
         if args['download']:
             cli_folder = args['FOLDER']
             cli_bucket = args['<bucket>']
