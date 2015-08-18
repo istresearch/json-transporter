@@ -91,7 +91,7 @@ def main():
                 cli_mapping = json.load(fm)
             esi.map(cli_iname, cli_dtype, cli_mapping)
         if args['index']:
-            cli_chunksize = args['--chunksize'] or 500
+            cli_chunksize = int(args['--chunksize']) or 500
             # Create index if not created
             esi.create(cli_iname)
             if args['--mapping']:
