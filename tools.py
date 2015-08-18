@@ -9,7 +9,6 @@ import shutil
 import urllib3
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
-from elasticsearch.helpers import streaming_bulk
 import boto
 from boto.s3.key import Key
 from pymongo import MongoClient
@@ -72,7 +71,7 @@ class ElasticPort(object):
         """ Query Elastic Search """
         pass
 
-    def index(self, jsonit, iname, dtype):
+    def index(self, jsonit, iname, dtype, chunksize=500):
         """ Data input is a JSON generator.  If using the command-line tool,
             this is handled via the JsonPort method which creates a
             JSON generator from lines read in from files.
@@ -91,7 +90,8 @@ class ElasticPort(object):
                 yield bulkr
 
 
-        r = bulk(client=self.es, actions=bulkgen(jsonit), stats_only=True)
+        r = bulk(client=self.es, actions=bulkgen(jsonit),
+                 chunk_size=chunksize, stats_only=True)
         print 'INDEX: successful: %s; failed: %s' % (r[0], r[1])
 
     def map(self, iname, dtype, mapping):

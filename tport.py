@@ -31,7 +31,7 @@ def main():
         tport inspect FILE ...
         tport es create --indexname=<indexname>
         tport es map --indexname=<indexname> --doctype=<doctype> --mapping=<mapping>
-        tport es index --indexname=<indexname> --doctype=<doctype> [--mapping=<mapping>] [FILE ...]
+        tport es index --indexname=<indexname> --doctype=<doctype> [--chunksize=<chunksize>] [--mapping=<mapping>] [FILE ...]
         tport s3 list
         tport s3 upload <bucket> [--compress] FILE ...
         tport s3 download <bucket> FOLDER
@@ -91,6 +91,7 @@ def main():
                 cli_mapping = json.load(fm)
             esi.map(cli_iname, cli_dtype, cli_mapping)
         if args['index']:
+            cli_chunksize = args['--chunksize'] or 500
             # Create index if not created
             esi.create(cli_iname)
             if args['--mapping']:
@@ -98,7 +99,7 @@ def main():
                     cli_mapping = json.load(fm)
                 esi.map(cli_iname, cli_dtype, cli_mapping)
 
-            esi.index(cli_jsonit.parse(), cli_iname, cli_dtype)
+            esi.index(cli_jsonit.parse(), cli_iname, cli_dtype, cli_chunksize)
 
     if args['s3']:
         s3u = S3Port(S3_SETTINGS['access_key'], S3_SETTINGS['secret_key'])
