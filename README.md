@@ -20,17 +20,12 @@ pip install -r requirements.txt
 To view usage just type `python tport.py -h`
 
 ## Configuration
-Basic settings can be found in the `settings.py` file.  To use with your servers hosted somewhere besides **localhost**, add a `localsettings.py` file, which will override `settings.py`.  For example, if you are working with MongoDB:
+Basic settings can be found in the `settings.py` file.  To use with your servers hosted somewhere besides **localhost**, add a `localsettings.py` file, which will override `settings.py`.  For example, if you are working with Elastic Search:
 
 ```
 ES_SETTINGS = {
-    'host': 'localhost:9200',
+    'host': 'http://randomescluster.com:9200',
     'ssl': 'false'
-}
-
-S3_SETTINGS = {
-    'access_key': 'ACCESS_KEY',
-    'secret_key': 'SECRET_KEY'
 }
 ```
 
