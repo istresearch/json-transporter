@@ -72,7 +72,7 @@ def main():
 
     f = args['FILE']
 
-    logging.debug(args)
+    # logging.info(args)
 
     cli_jsonit = JsonPort(fileinput.input(f)) if f else None
 
@@ -92,7 +92,7 @@ def main():
             esi.map(cli_iname, cli_dtype, cli_mapping)
         if args['index']:
             cli_chunksize = args['--chunksize'] or 500
-            int(cli_chunksize)
+            cli_chunksize = int(cli_chunksize)
             # Create index if not created
             esi.create(cli_iname)
             if args['--mapping']:
