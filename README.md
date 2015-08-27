@@ -17,31 +17,20 @@ git clone git@github.com:istresearch/json-transporter.git
 cd json-transporter
 pip install -r requirements.txt
 ```
-To view usage just type `python tport.py`
-```
-    Usage:
-        tport inspect FILE ...
-        tport s3 list
-        tport s3 (upload | download) <bucket> FILE ...
-        tport s3 destroy <bucket>
-        tport mongo list [--host=<host>] [--db=<db>]
-        tport mongo preview [--host=<host>] [--db=<db>] --collection=<collection>
-        tport mongo export [--host=<host>] [--db=<db>] --collection=<collection> [FILE ...]
-        tport mongo add [--host=<host>] [--db=<db>] --collection=<collection> FILE ...
-        tport kafka topics [--broker=<broker>]
-        tport kafka produce --topic=<topic> [--broker=<broker>] FILE ...
-        tport kafka consume --topic=<topic> [--broker=<broker>]
-        tport es (<index> | <map> | <query>) --indexname=<indexname> --doctype=<doctype> FILE ...
-        tport hbase scan [--host=<host>] --table=<table>
-```
+To view usage just type `python tport.py -h`
 
 ## Configuration
 Basic settings can be found in the `settings.py` file.  To use with your servers hosted somewhere besides **localhost**, add a `localsettings.py` file, which will override `settings.py`.  For example, if you are working with MongoDB:
 
 ```
-MONGO_SETTINGS = {
-    'host': 'transporter',
-    'db': 'dingo'
+ES_SETTINGS = {
+    'host': 'localhost:9200',
+    'ssl': 'false'
+}
+
+S3_SETTINGS = {
+    'access_key': 'ACCESS_KEY',
+    'secret_key': 'SECRET_KEY'
 }
 ```
 
