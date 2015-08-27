@@ -57,11 +57,14 @@ def main():
 
 
     Options:
-        -t --topic <topic>
-        -b --broker <broker>
+        -h --host <host>
         -i --indexname <indexname>
         -d --doctype <doctype>
-        -c --collection <collection>
+        -m --mapping <mapping>
+        -c --chunksize <chunksize>
+        -r --replace <replace>
+        -t --topic <topic>
+        -b --broker <broker>
 
     Notes:
         Might want to pass in the SETTINGS file in the command line rather
