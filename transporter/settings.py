@@ -24,11 +24,3 @@ KAFKA_SETTINGS = {
     'host': 'localhost:9092',
     'prefix': 'dingo'
 }
-
-# Local Overrides
-# ~~~~~~~~~~~~~~~
-
-try:
-    from localsettings import *
-except ImportError:
-    pass

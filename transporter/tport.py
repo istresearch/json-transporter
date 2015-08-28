@@ -17,6 +17,15 @@ from tools import KafkaPort
 from settings import (JSON_SETTINGS, ES_SETTINGS, S3_SETTINGS,
                       MONGO_SETTINGS, HBASE_SETTINGS, KAFKA_SETTINGS)
 
+# Local Overrides
+# ~~~~~~~~~~~~~~~
+sys.path.insert(0, '.')
+try:
+    from localsettings import *
+except ImportError:
+    pass
+
+
 # disable annoying SSL certificate warnings
 urllib3.disable_warnings()
 
