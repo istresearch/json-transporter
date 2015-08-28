@@ -66,7 +66,7 @@ def main():
 
 
     Options:
-        -h --host <host>
+        -h --help
         -i --indexname <indexname>
         -d --doctype <doctype>
         -m --mapping <mapping>
