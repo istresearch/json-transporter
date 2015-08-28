@@ -33,12 +33,14 @@ class JsonPort(object):
         """ Returns an JSON iterator object if input is valid JSON, else
             it returns an empty dictionary.
         """
+        errcount = 0
         for idx, i in enumerate(self.jsonlist):
             try:
                 yield json.loads(i)
             except ValueError as ve:
                 logging.warning('line {0}:  {1}'.format(idx, ve))
                 logging.debug('line {0}:  {1}'.format(idx, i))
+                
 
     def inspect(self):
         """ Output the serialized JSON object one line at a time.  To
