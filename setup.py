@@ -3,8 +3,8 @@ from setuptools import setup, find_packages
 
 
 def readme():
-    ''' Returns README contents as str '''
-    with open('README.md') as f:
+    ''' Returns README.rst contents as str '''
+    with open('README.rst') as f:
         return f.read()
 
 install_requires = [
