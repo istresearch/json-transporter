@@ -4,11 +4,6 @@ json-transporter
 Transportation is a precise business.
 -------------------------------------
 
-.. figure:: transporter.jpg
-   :alt: alt tag
-
-   alt tag
-
 **json-transporter** is a simple command line tool writen in Python for
 all your JSON transporting needs. Tools currently supported:
 
