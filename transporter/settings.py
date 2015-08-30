@@ -1,7 +1,3 @@
-JSON_SETTINGS = {
-
-}
-
 ES_SETTINGS = {
     'host': 'localhost:9200',
     'ssl': 'false'
@@ -13,7 +9,8 @@ S3_SETTINGS = {
 }
 
 MONGO_SETTINGS = {
-
+    'host': 'localhost',
+    'port': '27017'
 }
 
 HBASE_SETTINGS = {
