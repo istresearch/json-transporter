@@ -47,7 +47,7 @@ if 'nosetests' in sys.argv[1:]:
 
 setup(
     name='json-transporter',
-    version='0.2',
+    version='0.2.1',
     description='A JSON data transporter',
     long_description=readme(),
     author='Jason Haas',

@@ -13,7 +13,7 @@ all your JSON transporting needs. Tools currently supported:
 Quickstart
 ----------
 
-1) ``pip install transporter``
+1) ``pip install json-transporter``
 
 2) Add your specific connections to a **.tport** file in your home directory.  For example,
 
