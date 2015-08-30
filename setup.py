@@ -25,7 +25,7 @@ lint_requires = [
 tests_require = ['nose']
 dependency_links = []
 setup_requires = []
-extras_require={
+extras_require = {
     'test': tests_require,
     'all': install_requires + tests_require,
     'docs': ['sphinx'] + tests_require,
@@ -55,7 +55,10 @@ setup(
     zip_safe=True,
     test_suite='nose.collector',
     include_package_data=True,
-    entry_points={'console_scripts': ['tport=transporter.tport:main']},
+    entry_points={'console_scripts': [
+                                        'transporter=transporter.tport:main',
+                                        'tport=transporter.tport:main'
+                                        ]},
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
