@@ -1,0 +1,17 @@
+[elasticsearch]
+host = localhost:9200
+ssl = False
+
+[kafka]
+broker = localhost:9092
+
+[s3]
+access_key = my_access_key
+secret_key = my_secret_key
+
+[mongo]
+host = localhost
+db = local
+
+[hbase]
+host = localhost
