@@ -129,6 +129,47 @@ class ElasticPort(object):
         self.es.indices.create(iname, ignore=400)
 
 
+class KafkaPort(object):
+    """ Class to interface with Kafka.
+
+        :param str kafkabroker: Kafka broker and port, eg ``localhost:9092``
+        :param str logger: Logger to use for Kafka.
+    """
+
+    def __init__(self, kafkabroker, logger=None):
+        self.client = KafkaClient(hosts=kafkabroker)
+        self.logger = logger or logging.getLogger(__name__)
+
+    def produce(self, topic_name, jsonit):
+        """ Send data to a Kafka topic.
+
+            :param str topic_name: Kafka topic name
+            :param list jsonlist: List or iterator of JSON objects
+        """
+        topic = self.client.topics[topic_name]
+        self.producer = topic.get_producer()
+        self.logger.info('producing messages to %s' % topic_name)
+        self.producer.produce((json.dumps(s) for s in jsonit))
+        self.logger.info('all messages sent to %s' % topic_name)
+
+    def consume(self, topic_name):
+        """ Receive data from a Kafka topic.
+
+            :param str topic_name: Kafka topic name
+        """
+        topic = self.client.topics[topic_name]
+        self.consumer = topic.get_simple_consumer()
+        for message in self.consumer:
+            if message is not None:
+                print message.offset, message.value
+
+    def topics(self):
+        """ List Kafka topics. """
+        topics = [t for t in self.client.topics]
+        for s in sorted(topics):
+            print s
+
+
 class S3Port(object):
     """ Class to handle uploading and donwloading data to and from S3.  There
         is also an option to compress the files with gzip before uploading.
@@ -275,44 +316,3 @@ class HbasePort(object):
                 raw_input('\n--Press any key to continue--\n')
             except EOFError:
                 sys.exit(0)
-
-
-class KafkaPort(object):
-    """ Class to interface with Kafka.
-
-        :param str kafkabroker: Kafka broker and port, eg ``localhost:9092``
-        :param str logger: Logger to use for Kafka.
-    """
-
-    def __init__(self, kafkabroker, logger=None):
-        self.client = KafkaClient(hosts=kafkabroker)
-        self.logger = logger or logging.getLogger(__name__)
-
-    def produce(self, topic_name, jsonit):
-        """ Send data to a Kafka topic.
-
-            :param str topic_name: Kafka topic name
-            :param list jsonlist: List or iterator of JSON objects
-        """
-        topic = self.client.topics[topic_name]
-        self.producer = topic.get_producer()
-        self.logger.info('producing messages to %s' % topic_name)
-        self.producer.produce((json.dumps(s) for s in jsonit))
-        self.logger.info('all messages sent to %s' % topic_name)
-
-    def consume(self, topic_name):
-        """ Receive data from a Kafka topic.
-
-            :param str topic_name: Kafka topic name
-        """
-        topic = self.client.topics[topic_name]
-        self.consumer = topic.get_simple_consumer()
-        for message in self.consumer:
-            if message is not None:
-                print message.offset, message.value
-
-    def topics(self):
-        """ List Kafka topics. """
-        topics = [t for t in self.client.topics]
-        for s in sorted(topics):
-            print s

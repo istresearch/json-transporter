@@ -25,7 +25,7 @@ if parser.has_section('elasticsearch'):
     ES_SETTINGS['ssl'] = bool(parser.get('elasticsearch', 'ssl'))
 
 if parser.has_section('kafka'):
-    KAFKA_SETTINGS['host'] = parser.get('kafka', 'broker')
+    KAFKA_SETTINGS['broker'] = parser.get('kafka', 'broker')
 
 if parser.has_section('s3'):
     S3_SETTINGS['access_key'] = parser.get('s3', 'access_key')
@@ -33,7 +33,7 @@ if parser.has_section('s3'):
 
 if parser.has_section('mongo'):
     MONGO_SETTINGS['host'] = parser.get('mongo', 'host')
-    MONGO_SETTINGS['port'] = parser.get('mongo', 'port')
+    MONGO_SETTINGS['db'] = parser.get('mongo', 'db')
 
 if parser.has_section('hbase'):
     HBASE_SETTINGS['host'] = parser.get('hbase', 'host')
@@ -55,7 +55,10 @@ def main():
         tport inspect FILE ...
         tport es create --indexname=<indexname>
         tport es map --indexname=<indexname> --doctype=<doctype> --mapping=<mapping>
-        tport es index --indexname=<indexname> --doctype=<doctype> [--chunksize=<chunksize>] [--mapping=<mapping>] [FILE ...]
+        tport es index --indexname=<indexname> --doctype=<doctype> [--chunksize=<chunksize>] [--mapping=<mapping>] FILE ...
+        tport kafka topics [--broker=<broker>]
+        tport kafka produce --topic=<topic> [--broker=<broker>] FILE ...
+        tport kafka consume --topic=<topic> [--broker=<broker>]
         tport s3 list
         tport s3 upload <bucket> [--replace=<replace>] [--compress] FILE ...
         tport s3 download <bucket> FOLDER
@@ -65,20 +68,6 @@ def main():
         tport mongo export [--host=<host>] [--db=<db>] --collection=<collection> [FILE ...]
         tport mongo add [--host=<host>] [--db=<db>] --collection=<collection> FILE ...
         tport hbase scan [--host=<host>] --table=<table>
-        tport kafka topics [--broker=<broker>]
-        tport kafka produce --topic=<topic> [--broker=<broker>] FILE ...
-        tport kafka consume --topic=<topic> [--broker=<broker>]
-
-    Examples:
-        Upload files (preferably serialized JSON ) to S3
-        tport s3 upload --bucket=<bucket> FILE ...
-
-    Settings:
-        Some settings that don't change often (S3 keys, ES hosts, Kafka brokers)
-        can be set in the "localsettings.py" file so that they do not need
-        to be passed in at the command line.  However, it is still possible
-        to pass these values at the command line to override the settings.
-
 
     Options:
         -h --help
@@ -89,12 +78,8 @@ def main():
         -r --replace <replace>
         -t --topic <topic>
         -b --broker <broker>
-
-    Notes:
-        Might want to pass in the SETTINGS file in the command line rather
-        than having it in the import process.
-
     """
+
     args = docopt(main.__doc__)
 
     f = args['FILE']
@@ -128,6 +113,18 @@ def main():
                 esi.map(cli_iname, cli_dtype, cli_mapping)
 
             esi.index(cli_jsonit.parse(), cli_iname, cli_dtype, cli_chunksize)
+
+    if args['kafka']:
+        ka_broker = args['--broker'] or KAFKA_SETTINGS['broker']
+        kai = KafkaPort(ka_broker)
+        if args['topics']:
+            kai.topics()
+        if args['produce']:
+            cli_topic = args['--topic']
+            kai.produce(cli_topic, cli_jsonit.parse())
+        if args['consume']:
+            cli_topic = args['--topic']
+            kai.consume(cli_topic)
 
     if args['s3']:
         s3u = S3Port(S3_SETTINGS['access_key'], S3_SETTINGS['secret_key'])
@@ -177,18 +174,6 @@ def main():
         if args['scan']:
             hbi_table = args['--table']
             hbi.scan(hbi_table)
-
-    if args['kafka']:
-        ka_broker = args['--broker'] or KAFKA_SETTINGS['broker']
-        kai = KafkaPort(ka_broker)
-        if args['topics']:
-            kai.topics()
-        if args['produce']:
-            cli_topic = args['--topic']
-            kai.produce(cli_topic, cli_jsonit.parse())
-        if args['consume']:
-            cli_topic = args['--topic']
-            kai.consume(cli_topic)
 
 if __name__ == '__main__':
     sys.exit(main())

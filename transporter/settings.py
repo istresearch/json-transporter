@@ -1,6 +1,10 @@
 ES_SETTINGS = {
     'host': 'localhost:9200',
-    'ssl': 'false'
+    'ssl': False
+}
+
+KAFKA_SETTINGS = {
+    'broker': 'localhost:9092'
 }
 
 S3_SETTINGS = {
@@ -10,14 +14,10 @@ S3_SETTINGS = {
 
 MONGO_SETTINGS = {
     'host': 'localhost',
-    'port': '27017'
+    'db': 'local'
 }
 
 HBASE_SETTINGS = {
     'host': 'localhost'
 }
 
-KAFKA_SETTINGS = {
-    'host': 'localhost:9092',
-    'prefix': 'dingo'
-}
