@@ -1,5 +1,5 @@
 from nose.tools import *
-import tport
+import transporter
 
 def setup():
     print "SETUP!"
