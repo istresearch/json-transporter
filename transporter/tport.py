@@ -2,28 +2,43 @@
 
 import fileinput
 import sys
+import os
 from docopt import docopt
 import logging
 import urllib3
 import json
 
-from tools import JsonPort
-from tools import S3Port
-from tools import ElasticPort
-from tools import MongoPort
-from tools import HbasePort
-from tools import KafkaPort
+from tools import JsonPort, S3Port, ElasticPort, MongoPort, HbasePort, KafkaPort
 
-from settings import (JSON_SETTINGS, ES_SETTINGS, S3_SETTINGS,
+from settings import (ES_SETTINGS, S3_SETTINGS,
                       MONGO_SETTINGS, HBASE_SETTINGS, KAFKA_SETTINGS)
 
 # Local Overrides
 # ~~~~~~~~~~~~~~~
-sys.path.insert(0, '.')
-try:
-    from localsettings import *
-except ImportError:
-    pass
+from ConfigParser import SafeConfigParser
+
+parser = SafeConfigParser()
+parser.read(os.path.expanduser('~/.tport'))
+
+if parser.has_section('elasticsearch'):
+    ES_SETTINGS['host'] = parser.get('elasticsearch', 'host')
+    ES_SETTINGS['ssl'] = bool(parser.get('elasticsearch', 'ssl'))
+
+if parser.has_section('kafka'):
+    KAFKA_SETTINGS['host'] = parser.get('kafka', 'broker')
+
+if parser.has_section('s3'):
+    S3_SETTINGS['access_key'] = parser.get('s3', 'access_key')
+    S3_SETTINGS['secret_key'] = parser.get('s3', 'secret_key')
+
+if parser.has_section('mongo'):
+    MONGO_SETTINGS['host'] = parser.get('mongo', 'host')
+    MONGO_SETTINGS['port'] = parser.get('mongo', 'port')
+
+if parser.has_section('hbase'):
+    HBASE_SETTINGS['host'] = parser.get('hbase', 'host')
+
+# cfg_dict = [dict(parser.items(cfg)) for cfg in parser.sections()]
 
 
 # disable annoying SSL certificate warnings
