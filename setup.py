@@ -1,4 +1,6 @@
 import sys
+import os
+import shutil
 from setuptools import setup, find_packages
 
 
@@ -6,6 +8,14 @@ def readme():
     ''' Returns README.rst contents as str '''
     with open('README.rst') as f:
         return f.read()
+
+data_files = [
+    (os.path.expanduser('~/.tport'), ['.tport'])
+]
+
+# Temporary hack to get around setup.py bombing on already existing files
+if not os.path.isfile(os.path.expanduser('~/.tport')):
+    shutil.copyfile('.tport', os.path.expanduser('~/.tport'))
 
 install_requires = [
     'urllib3',
@@ -37,7 +47,7 @@ if 'nosetests' in sys.argv[1:]:
 
 setup(
     name='json-transporter',
-    version='0.1',
+    version='0.2',
     description='A JSON data transporter',
     long_description=readme(),
     author='Jason Haas',
@@ -47,6 +57,7 @@ setup(
     keywords=['json', 'elasticsearch', 's3', 'kafka', 'mongo'],
     packages=find_packages(),
     package_data={},
+    # data_files=data_files,
     install_requires=install_requires,
     tests_require=tests_require,
     setup_requires=setup_requires,
