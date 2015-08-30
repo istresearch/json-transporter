@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/istresearch/json-transporter.svg?branch=master
+    :target: https://travis-ci.org/istresearch/json-transporter
+
 Overview
 ---------
 
