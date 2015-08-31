@@ -21,11 +21,11 @@ data_files = [
 ]
 
 # Temporary hack to get around setup.py bombing on already existing files
-if not os.path.isfile(os.path.expanduser('~/.tport')):
-    shutil.copyfile('.tport', os.path.expanduser('~/.tport'))
+# if not os.path.isfile(os.path.expanduser('~/.tport')):
+#     shutil.copyfile('.tport', os.path.expanduser('~/.tport'))
 
 install_requires = [
-    'urllib3',
+    # 'urllib3',
     'elasticsearch>=1.6',
     'boto',
     'pymongo',
@@ -83,7 +83,6 @@ setup(
         'Topic :: Text Processing :: General',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
     ],
 )
