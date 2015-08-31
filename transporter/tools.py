@@ -42,6 +42,10 @@ class JsonPort(object):
             except ValueError as ve:
                 logging.warning('line {0}:  {1}'.format(idx, ve))
                 logging.debug('line {0}:  {1}'.format(idx, i))
+                ans = raw_input('\nThis line is not JSON.'
+                                '  Continue to next line?  (Y/n)  ')
+                if ans.lower() == 'n':
+                    sys.exit(0)
 
     def inspect(self):
         """ Output the serialized JSON object one line at a time.  To
@@ -49,9 +53,8 @@ class JsonPort(object):
         """
         for i in self.parse():
             print json.dumps(i, indent=2)
-            try:
-                raw_input('\n--Press <ENTER> to continue--\n')
-            except EOFError:
+            ans = raw_input('\n--Continue to next line?  (Y/n)--\n')
+            if ans.lower() == 'n':
                 sys.exit(0)
 
 
