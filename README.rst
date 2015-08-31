@@ -13,6 +13,18 @@ all your JSON transporting needs. Tools currently supported:
 -  MongoDB
 -  HBase
 
+Requirements
+------------
+
+- Unix based machine (Linux or OS X)
+- Python 2.7.x
+
+This tool has been tested on CentOS 6.5, Ubuntu 14.04, and MacOSX 10.10.5.
+If you wish to install in a different environment I *highly*  recommend installing 
+inside a Python ``virtualenv``.  Setting up a virtual environment is outside the scope
+of this document.
+
+
 Quickstart
 ----------
 
@@ -23,15 +35,22 @@ Quickstart
 ::
 
     [elasticsearch]
-    host = http://myescluster.com:9200
-    ssl = false
+    host = localhost:9200
+    ssl = False
 
     [kafka]
-    host = http://mykafkabroker.com:9092
+    broker = localhost:9092
 
     [s3]
-    access_key = youraccesskey
-    secret_key = yoursecretkey
+    access_key = my_access_key
+    secret_key = my_secret_key
+
+    [mongo]
+    host = localhost
+    db = test
+
+    [hbase]
+    host = localhost
 
 3) To view command line usage just type ``tport --help``
 
