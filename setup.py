@@ -1,7 +1,14 @@
 import sys
 import os
+import re
 import shutil
 from setuptools import setup, find_packages
+
+
+def get_version():
+    with open('transporter/version.py') as version_file:
+        return re.search(r"""__version__\s+=\s+(['"])(?P<version>.+?)\1""",
+                         version_file.read()).group('version')
 
 
 def readme():
@@ -47,7 +54,7 @@ if 'nosetests' in sys.argv[1:]:
 
 setup(
     name='json-transporter',
-    version='0.2.1',
+    version=get_version(),
     description='A JSON data transporter',
     long_description=readme(),
     author='Jason Haas',
