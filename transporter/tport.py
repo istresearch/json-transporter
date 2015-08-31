@@ -5,7 +5,7 @@ import sys
 import os
 from docopt import docopt
 import logging
-import urllib3
+# import urllib3
 import json
 
 from tools import JsonPort, S3Port, ElasticPort, MongoPort, HbasePort, KafkaPort
@@ -42,7 +42,7 @@ if parser.has_section('hbase'):
 
 
 # disable annoying SSL certificate warnings
-urllib3.disable_warnings()
+# urllib3.disable_warnings()
 
 # set up a logger
 logging.basicConfig(level=logging.INFO)
