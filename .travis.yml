@@ -13,4 +13,4 @@ deploy:
   on:
     tags: true
     repo: istresearch/json-transporter
-    branch: master
+    distributions: "sdist bdist_wheel"
