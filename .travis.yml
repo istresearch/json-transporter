@@ -1,7 +1,16 @@
 language: python
 python:
-  - "2.6"
-  - "2.7"
-  - "pypy"
+- '2.6'
+- '2.7'
+- pypy
 script:
-  - python setup.py test
+- python setup.py test
+deploy:
+  provider: pypi
+  user: jasonrhaas
+  password:
+    secure: cmsZ2ma93ex/tmACLBhbI9LkKSPUiTx8v0yO0yNuV/LtSr2sNI5lDMYb8jTuuJeZaEmT4JPAyucQ/Q0V44VZbARqJemPEoiOq0cg0PsqPNFZD7Z5kAQwmePqg3PvCkPKenNA/buLhDFU/tuWQSUa3SUh0uM831+Kp3ywpYtNHm54Z4wZUt2UkyEWiFkfZhbAVpFTqobBiQXsE4F7taK9+aDdzW6A70raNeaL4Rx/dmcKpcQqE98hpTW/4mYVYm9feZ4j3X+hVsGfhdPypr5RGMVuerZBlDG/6v6vPpPwktZuphqhGL7OkhShpZ403niBHvcyrn3HhirSaccpknaghyYoltvGKTkEnNEVWgu9iYurfnmmJ2Sr3N7P1pFRH/zMyEr3BTiFoKNUw6jBp8qwOEAnSTeV5ZV/xJrVHZx4lTJx5ecmL2GhupnjkKbUAJx70UrozL4dMIpk/G9YJPIDUlRF5y+htp+igAKTYp3T6PkjKOCEcuz2DPDimaurKhkBfkyPdmTvV5z2RL7Vc13XvIrxhO5CGFGFBN2I8Um2SDuOu8TiGCE/z/UofO3U+OH/V/O/i8oOlrISky8IV+ZncQ27pQvHl194FlKbO+etPXUL1GSZEHME/BRpS6M1wHl/6kbfx0Nq7jEkCaAw5wMsExcQUrEcqjEhuM7P5tckmuI=
+  on:
+    tags: true
+    repo: istresearch/json-transporter
+    branch: master
