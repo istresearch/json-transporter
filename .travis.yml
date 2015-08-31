@@ -13,4 +13,3 @@ deploy:
   on:
     tags: true
     repo: istresearch/json-transporter
-    distributions: "sdist bdist_wheel"
