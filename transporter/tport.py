@@ -55,7 +55,7 @@ def main():
         tport inspect FILE ...
         tport es create --indexname=<indexname>
         tport es map --indexname=<indexname> --doctype=<doctype> --mapping=<mapping>
-        tport es index --indexname=<indexname> --doctype=<doctype> [--chunksize=<chunksize>] [--mapping=<mapping>] FILE ...
+        tport es index --indexname=<indexname> --doctype=<doctype> [--chunksize=<chunksize>] [--mapping=<mapping>] [--ignore-errors=<ignore-errors>] FILE ...
         tport kafka topics [--broker=<broker>]
         tport kafka produce --topic=<topic> [--broker=<broker>] FILE ...
         tport kafka consume --topic=<topic> [--broker=<broker>]
@@ -71,6 +71,7 @@ def main():
 
     Options:
         -h --help
+        -e --ignore-errors <ignore-errors>
         -i --indexname <indexname>
         -d --doctype <doctype>
         -m --mapping <mapping>
@@ -81,12 +82,11 @@ def main():
     """
 
     args = docopt(main.__doc__)
-
-    f = args['FILE']
-
     # logging.info(args)
+    f = args['FILE']
+    cli_ignore = True if args['--ignore-errors'] else False
 
-    cli_jsonit = JsonPort(fileinput.input(f)) if f else None
+    cli_jsonit = JsonPort(fileinput.input(f), cli_ignore) if f else None
 
     if args['inspect']:
         cli_jsonit.inspect()
