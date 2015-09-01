@@ -1,8 +1,6 @@
-urllib3
 elasticsearch>=1.6
 boto
 pymongo
 happybase
 pykafka
 docopt
-
