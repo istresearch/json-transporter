@@ -24,8 +24,15 @@ data_files = [
 # if not os.path.isfile(os.path.expanduser('~/.tport')):
 #     shutil.copyfile('.tport', os.path.expanduser('~/.tport'))
 
-with open('requirements.txt') as f:
-    install_requires = [x.strip() for x in f]
+install_requires = [
+    # 'urllib3',
+    'elasticsearch>=1.6',
+    'boto',
+    'pymongo',
+    'happybase',
+    'pykafka',
+    'docopt'
+]
 
 lint_requires = [
     'pep8',
